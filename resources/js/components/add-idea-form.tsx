@@ -1,12 +1,14 @@
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { useForm } from '@inertiajs/react';
 import * as React from 'react';
 
 interface AddIdeaFormProps {
   onSuccess?: () => void;
+  className?: string;
 }
 
-export default function AddIdeaForm({ onSuccess }: AddIdeaFormProps) {
+export default function AddIdeaForm({ onSuccess, className }: AddIdeaFormProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { data, setData, post, processing, errors, reset } = useForm({
     title: '',
@@ -17,7 +19,7 @@ export default function AddIdeaForm({ onSuccess }: AddIdeaFormProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !processing && data.title.trim()) {
       e.preventDefault();
-      
+
       post('/ideas', {
         onSuccess: () => {
           reset();
@@ -29,13 +31,13 @@ export default function AddIdeaForm({ onSuccess }: AddIdeaFormProps) {
         },
         onError: (errors) => {
           console.error('Failed to create idea:', errors);
-        }
+        },
       });
     }
   };
 
   return (
-    <div className="space-y-2">
+    <div className={cn('space-y-2', className)}>
       <Input
         ref={inputRef}
         type="text"
