@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Lightbulb, Search, Archive, Plus, ArrowRight } from 'lucide-react';
+import { Archive, ArrowRight, Lightbulb, Plus, Search } from 'lucide-react';
 
 export default function Welcome() {
   const { auth } = usePage<SharedData>().props;
@@ -57,10 +57,10 @@ export default function Welcome() {
               <span className="text-blue-600 dark:text-blue-400"> Organized</span>
             </h1>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-              Capture, organize, and develop your ideas with IdeaDB. Never lose a brilliant thought again.
-              From quick notes to detailed concepts, keep all your creativity in one place.
+              Capture, organize, and develop your ideas with IdeaDB. Never lose a brilliant thought again. From quick notes to detailed concepts, keep
+              all your creativity in one place.
             </p>
-            
+
             {!auth.user && (
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link
@@ -114,9 +114,7 @@ export default function Welcome() {
 
           <div className="mt-20 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div className="text-center">
-              <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100">
-                Ready to organize your creativity?
-              </h2>
+              <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100">Ready to organize your creativity?</h2>
               <p className="mb-6 text-slate-600 dark:text-slate-400">
                 Join thousands of creators, entrepreneurs, and thinkers who trust IdeaDB with their ideas.
               </p>
@@ -135,9 +133,7 @@ export default function Welcome() {
 
         <footer className="border-t border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
           <div className="mx-auto max-w-6xl px-6 py-8">
-            <div className="flex items-center justify-center text-sm text-slate-600 dark:text-slate-400">
-              Built with Laravel & React
-            </div>
+            <div className="flex items-center justify-center text-sm text-slate-600 dark:text-slate-400">Built with Laravel & React</div>
           </div>
         </footer>
       </div>
