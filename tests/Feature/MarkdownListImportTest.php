@@ -27,13 +27,13 @@ test('batch import handles markdown lists with nested items', function () {
     $this->assertDatabaseCount('ideas', 3);
 
     $importedIdeas = Idea::where('user_id', $user->id)->orderBy('id')->get();
-    
+
     expect($importedIdeas[0]->title)->toBe('First idea');
     expect($importedIdeas[0]->content)->toBeNull();
-    
+
     expect($importedIdeas[1]->title)->toBe('Second idea with details');
     expect($importedIdeas[1]->content)->toBe("First detail\nSecond detail");
-    
+
     expect($importedIdeas[2]->title)->toBe('Third idea');
     expect($importedIdeas[2]->content)->toBe('Some description');
 });

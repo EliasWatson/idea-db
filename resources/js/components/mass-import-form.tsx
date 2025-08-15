@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { useForm, router } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import * as React from 'react';
 
 interface MassImportFormProps {
@@ -28,14 +28,14 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
     const lines = text.split('\n');
     const ideas: Array<{ title: string; description?: string }> = [];
     let currentIdea: { title: string; description?: string } | null = null;
-    
+
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed) continue;
-      
+
       // Check if this is a main list item (- or * at the start with no indentation, or numbered with no indentation)
       const mainListMatch = line.match(/^[-*]\s+(.+)$/) || line.match(/^\d+\.\s+(.+)$/);
-      
+
       if (mainListMatch) {
         // Save previous idea if exists
         if (currentIdea) {
@@ -46,7 +46,7 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
       } else {
         // Check if this is a nested list item (indented - or *, or indented numbered)
         const nestedMatch = line.match(/^\s+[-*]\s+(.+)$/) || line.match(/^\s+\d+\.\s+(.+)$/);
-        
+
         if (nestedMatch && currentIdea) {
           // Add to description of current idea
           const description = nestedMatch[1];
@@ -73,12 +73,12 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
         }
       }
     }
-    
+
     // Don't forget the last idea
     if (currentIdea) {
       ideas.push(currentIdea);
     }
-    
+
     return ideas;
   };
 
@@ -90,19 +90,23 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
     }
 
     const parsedIdeas = parseMarkdownList(data.ideas);
-    
-    router.post('/ideas/batch', {
-      ideas: parsedIdeas,
-      status: data.status,
-    }, {
-      onSuccess: () => {
-        reset();
-        onSuccess?.();
+
+    router.post(
+      '/ideas/batch',
+      {
+        ideas: parsedIdeas,
+        status: data.status,
       },
-      onError: (errors: Record<string, string>) => {
-        console.error('Failed to import ideas:', errors);
+      {
+        onSuccess: () => {
+          reset();
+          onSuccess?.();
+        },
+        onError: (errors: Record<string, string>) => {
+          console.error('Failed to import ideas:', errors);
+        },
       },
-    });
+    );
   };
 
   return (
