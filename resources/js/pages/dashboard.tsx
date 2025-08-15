@@ -1,7 +1,7 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AddIdeaForm from '@/components/add-idea-form';
 import IdeaList from '@/components/idea-list';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -35,9 +35,7 @@ export default function Dashboard({ ideas }: DashboardProps) {
           <Card>
             <CardHeader>
               <CardTitle>Add New Idea</CardTitle>
-              <CardDescription>
-                Share your brilliant ideas and track their progress
-              </CardDescription>
+              <CardDescription>Share your brilliant ideas and track their progress</CardDescription>
             </CardHeader>
             <CardContent>
               <AddIdeaForm />

@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Idea {
   id: number;
@@ -36,9 +35,7 @@ export default function IdeaList({ ideas }: IdeaListProps) {
         <CardContent className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-muted-foreground">No ideas yet</p>
-            <p className="text-sm text-muted-foreground">
-              Add your first idea using the form above!
-            </p>
+            <p className="text-sm text-muted-foreground">Add your first idea using the form above!</p>
           </div>
         </CardContent>
       </Card>
@@ -53,19 +50,13 @@ export default function IdeaList({ ideas }: IdeaListProps) {
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <CardTitle className="text-lg">{idea.title}</CardTitle>
-                <CardDescription>
-                  Created {new Date(idea.created_at).toLocaleDateString()}
-                </CardDescription>
+                <CardDescription>Created {new Date(idea.created_at).toLocaleDateString()}</CardDescription>
               </div>
-              <Badge variant={statusColors[idea.status]}>
-                {statusLabels[idea.status]}
-              </Badge>
+              <Badge variant={statusColors[idea.status]}>{statusLabels[idea.status]}</Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-              {idea.content}
-            </p>
+            <p className="text-sm whitespace-pre-wrap text-muted-foreground">{idea.content}</p>
           </CardContent>
         </Card>
       ))}

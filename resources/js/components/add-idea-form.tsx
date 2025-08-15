@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useForm } from '@inertiajs/react';
+import * as React from 'react';
 
 interface AddIdeaFormProps {
   onSuccess?: () => void;
@@ -17,7 +17,7 @@ export default function AddIdeaForm({ onSuccess }: AddIdeaFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     post('/ideas', {
       onSuccess: () => {
         reset();
@@ -38,9 +38,7 @@ export default function AddIdeaForm({ onSuccess }: AddIdeaFormProps) {
           placeholder="Enter your idea title..."
           required
         />
-        {errors.title && (
-          <p className="text-sm text-destructive">{errors.title}</p>
-        )}
+        {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
       </div>
 
       <div className="space-y-2">
@@ -50,12 +48,10 @@ export default function AddIdeaForm({ onSuccess }: AddIdeaFormProps) {
           value={data.content}
           onChange={(e) => setData('content', e.target.value)}
           placeholder="Describe your idea..."
-          className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           rows={4}
         />
-        {errors.content && (
-          <p className="text-sm text-destructive">{errors.content}</p>
-        )}
+        {errors.content && <p className="text-sm text-destructive">{errors.content}</p>}
       </div>
 
       <Button type="submit" disabled={processing} className="w-full">
