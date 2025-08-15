@@ -15,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     
     Route::post('ideas', [App\Http\Controllers\IdeaController::class, 'store'])->name('ideas.store');
+    Route::get('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'show'])->name('ideas.show');
 });
 
 require __DIR__.'/settings.php';

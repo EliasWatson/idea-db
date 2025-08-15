@@ -6,6 +6,8 @@ use App\Models\Idea;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class IdeaController extends Controller
 {
@@ -28,5 +30,16 @@ class IdeaController extends Controller
                 ->withErrors($e->validator)
                 ->withInput();
         }
+    }
+
+    public function show(Idea $idea): Response
+    {
+        if ($idea->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+        
+        return Inertia::render('Ideas/Show', [
+            'idea' => $idea,
+        ]);
     }
 }

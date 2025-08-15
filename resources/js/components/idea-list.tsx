@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from '@inertiajs/react';
 
 interface Idea {
   id: number;
@@ -43,22 +44,24 @@ export default function IdeaList({ ideas }: IdeaListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       {ideas.map((idea) => (
-        <Card key={idea.id}>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <CardTitle className="text-lg">{idea.title}</CardTitle>
-                <CardDescription>Created {new Date(idea.created_at).toLocaleDateString()}</CardDescription>
+        <Link key={idea.id} href={`/ideas/${idea.id}`}>
+          <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="text-lg">{idea.title}</CardTitle>
+                  <CardDescription>Created {new Date(idea.created_at).toLocaleDateString()}</CardDescription>
+                </div>
+                <Badge variant={statusColors[idea.status]}>{statusLabels[idea.status]}</Badge>
               </div>
-              <Badge variant={statusColors[idea.status]}>{statusLabels[idea.status]}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm whitespace-pre-wrap text-muted-foreground">{idea.content}</p>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <p className="line-clamp-3 text-sm whitespace-pre-wrap text-muted-foreground">{idea.content}</p>
+            </CardContent>
+          </Card>
+        </Link>
       ))}
     </div>
   );
