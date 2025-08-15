@@ -11,6 +11,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+    
+    Route::post('ideas', [App\Http\Controllers\IdeaController::class, 'store'])->name('ideas.store');
 });
 
 require __DIR__.'/settings.php';

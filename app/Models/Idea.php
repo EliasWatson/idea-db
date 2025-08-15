@@ -20,6 +20,7 @@ class Idea extends Model
         'title',
         'content',
         'status',
+        'user_id',
     ];
 
     /**
