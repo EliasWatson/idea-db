@@ -14,7 +14,7 @@ class IdeaController extends Controller
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
-                'content' => 'required|string',
+                'content' => 'nullable|string',
                 'status' => 'string|in:draft,active,archived,completed',
             ]);
 
