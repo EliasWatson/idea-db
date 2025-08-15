@@ -9,8 +9,19 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
+        $searchQuery = request('search');
+
+        if ($searchQuery) {
+            $ideas = App\Models\Idea::search($searchQuery)
+                ->where('user_id', auth()->id())
+                ->get();
+        } else {
+            $ideas = auth()->user()->ideas()->latest()->get();
+        }
+
         return Inertia::render('dashboard', [
-            'ideas' => auth()->user()->ideas()->latest()->get(),
+            'ideas' => $ideas,
+            'search' => $searchQuery,
         ]);
     })->name('dashboard');
 

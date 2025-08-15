@@ -3,10 +3,11 @@ import IdeaList from '@/components/idea-list';
 import MassImportForm from '@/components/mass-import-form';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { Upload } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { Search, Upload } from 'lucide-react';
 import * as React from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -27,10 +28,32 @@ interface Idea {
 
 interface DashboardProps {
   ideas: Idea[];
+  search?: string;
 }
 
-export default function Dashboard({ ideas }: DashboardProps) {
+export default function Dashboard({ ideas, search }: DashboardProps) {
   const [isImportDialogOpen, setIsImportDialogOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState(search || '');
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleSearch = React.useCallback(
+    (query: string) => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      searchTimeoutRef.current = setTimeout(() => {
+        router.get(
+          '/dashboard',
+          { search: query || undefined },
+          {
+            preserveScroll: true,
+            preserveState: true,
+          },
+        );
+      }, 300);
+    },
+    [router],
+  );
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -58,8 +81,23 @@ export default function Dashboard({ ideas }: DashboardProps) {
           </Dialog>
         </div>
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Your Ideas</h2>
-          <IdeaList ideas={ideas} />
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Your Ideas</h2>
+            <div className="relative max-w-sm">
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search ideas..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  handleSearch(e.target.value);
+                }}
+                className="pl-9"
+              />
+            </div>
+          </div>
+          <IdeaList ideas={ideas} searchQuery={search} />
         </div>
       </div>
     </AppLayout>

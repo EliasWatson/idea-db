@@ -13,6 +13,7 @@ interface Idea {
 
 interface IdeaListProps {
   ideas: Idea[];
+  searchQuery?: string;
 }
 
 const statusColors = {
@@ -29,14 +30,23 @@ const statusLabels = {
   completed: 'Completed',
 } as const;
 
-export default function IdeaList({ ideas }: IdeaListProps) {
+export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
   if (ideas.length === 0) {
     return (
       <div className="rounded-md border">
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
-            <p className="text-muted-foreground">No ideas yet</p>
-            <p className="text-sm text-muted-foreground">Add your first idea using the form above!</p>
+            {searchQuery ? (
+              <>
+                <p className="text-muted-foreground">No ideas found</p>
+                <p className="text-sm text-muted-foreground">Try adjusting your search terms</p>
+              </>
+            ) : (
+              <>
+                <p className="text-muted-foreground">No ideas yet</p>
+                <p className="text-sm text-muted-foreground">Add your first idea using the form above!</p>
+              </>
+            )}
           </div>
         </div>
       </div>
