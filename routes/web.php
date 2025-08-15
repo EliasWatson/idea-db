@@ -13,8 +13,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'ideas' => auth()->user()->ideas()->latest()->get(),
         ]);
     })->name('dashboard');
-    
+
     Route::post('ideas', [App\Http\Controllers\IdeaController::class, 'store'])->name('ideas.store');
+    Route::post('ideas/batch', [App\Http\Controllers\IdeaController::class, 'batchStore'])->name('ideas.batch-store');
     Route::get('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'show'])->name('ideas.show');
     Route::put('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'update'])->name('ideas.update');
     Route::delete('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'destroy'])->name('ideas.destroy');
