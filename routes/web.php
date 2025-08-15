@@ -17,6 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('ideas', [App\Http\Controllers\IdeaController::class, 'store'])->name('ideas.store');
     Route::get('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'show'])->name('ideas.show');
     Route::put('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'update'])->name('ideas.update');
+    Route::delete('ideas/{idea}', [App\Http\Controllers\IdeaController::class, 'destroy'])->name('ideas.destroy');
 });
 
 require __DIR__.'/settings.php';

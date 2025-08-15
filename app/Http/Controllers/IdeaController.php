@@ -65,4 +65,15 @@ class IdeaController extends Controller
                 ->withInput();
         }
     }
+
+    public function destroy(Idea $idea): RedirectResponse
+    {
+        if ($idea->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $idea->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Idea deleted successfully!');
+    }
 }

@@ -1,14 +1,15 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Edit, Save, X } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, Edit, Save, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface Idea {
@@ -40,6 +41,7 @@ const statusLabels = {
 
 export default function ShowIdea({ idea }: ShowIdeaProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { data, setData, put, processing, errors, reset } = useForm({
     title: idea.title,
     content: idea.content || '',
@@ -73,6 +75,18 @@ export default function ShowIdea({ idea }: ShowIdeaProps) {
       },
       onError: (errors) => {
         console.error('Failed to update idea:', errors);
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    setIsDeleting(true);
+    router.delete(`/ideas/${idea.id}`, {
+      onFinish: () => {
+        setIsDeleting(false);
+      },
+      onError: (errors) => {
+        console.error('Failed to delete idea:', errors);
       },
     });
   };
@@ -112,10 +126,41 @@ export default function ShowIdea({ idea }: ShowIdeaProps) {
                 </Button>
               </>
             ) : (
-              <Button size="sm" onClick={handleEdit}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
+              <>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Delete Idea</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to delete "{idea.title}"? This action cannot be undone.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button variant="outline" size="sm">
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                <Button size="sm" onClick={handleEdit}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+              </>
             )}
           </div>
         </div>
