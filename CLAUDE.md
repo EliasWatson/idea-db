@@ -25,22 +25,21 @@ This is a Laravel application using:
 
 ## Development Commands
 
-**Start development server:**
+**Note:** This project uses Laravel Herd, so the Laravel server is always running at `http://idea-db.test`.
+
+**Frontend development:**
 ```bash
-composer dev
+npm run dev          # Start Vite dev server for hot reloading
+npm run build        # Build frontend assets (required to see changes)
 ```
-This runs Laravel server, queue worker, Pail logs, and Vite dev server concurrently.
 
 **For SSR development:**
 ```bash
-composer dev:ssr
+npm run build:ssr    # Build with SSR support
 ```
 
-**Frontend commands:**
+**Additional frontend commands:**
 ```bash
-npm run dev          # Vite dev server
-npm run build        # Production build
-npm run build:ssr    # Build with SSR
 npm run lint         # ESLint with auto-fix
 npm run format       # Prettier formatting
 npm run types        # TypeScript type checking
