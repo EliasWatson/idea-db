@@ -107,21 +107,12 @@ export default function ShowIdea({ idea }: ShowIdeaProps) {
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                  disabled={processing}
-                >
-                  <X className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" onClick={handleCancel} disabled={processing}>
+                  <X className="mr-2 h-4 w-4" />
                   Cancel
                 </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={processing}
-                >
-                  <Save className="h-4 w-4 mr-2" />
+                <Button size="sm" onClick={handleSave} disabled={processing}>
+                  <Save className="mr-2 h-4 w-4" />
                   Save
                 </Button>
               </>
@@ -130,34 +121,27 @@ export default function ShowIdea({ idea }: ShowIdeaProps) {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="destructive" size="sm">
-                      <Trash2 className="h-4 w-4 mr-2" />
+                      <Trash2 className="mr-2 h-4 w-4" />
                       Delete
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Delete Idea</DialogTitle>
-                      <DialogDescription>
-                        Are you sure you want to delete "{idea.title}"? This action cannot be undone.
-                      </DialogDescription>
+                      <DialogDescription>Are you sure you want to delete "{idea.title}"? This action cannot be undone.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                       <Button variant="outline" size="sm">
                         Cancel
                       </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                      >
+                      <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
                         {isDeleting ? 'Deleting...' : 'Delete'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
                 <Button size="sm" onClick={handleEdit}>
-                  <Edit className="h-4 w-4 mr-2" />
+                  <Edit className="mr-2 h-4 w-4" />
                   Edit
                 </Button>
               </>
@@ -168,7 +152,7 @@ export default function ShowIdea({ idea }: ShowIdeaProps) {
         <Card>
           <CardHeader>
             <div className="flex items-start justify-between">
-              <div className="space-y-1 flex-1">
+              <div className="flex-1 space-y-1">
                 {isEditing ? (
                   <div className="space-y-2">
                     <Label htmlFor="title">Title</Label>
