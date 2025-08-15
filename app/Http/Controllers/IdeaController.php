@@ -16,11 +16,26 @@ class IdeaController extends Controller
     {
         try {
             $validated = $request->validate([
-                'title' => 'required|string|max:255',
+                'title' => 'required|string',
                 'content' => 'nullable|string',
                 'status' => 'string|in:draft,active,archived,completed',
             ]);
 
+            $title = $validated['title'];
+            $content = $validated['content'] ?? '';
+
+            // If title is longer than 255 characters, truncate and prepend to description
+            if (strlen($title) > 255) {
+                if ($content) {
+                    $content = $title."\n\n".$content;
+                } else {
+                    $content = $title;
+                }
+                $title = substr($title, 0, 255);
+            }
+
+            $validated['title'] = $title;
+            $validated['content'] = $content ?: null;
             $validated['user_id'] = $request->user()->id;
 
             Idea::create($validated);
@@ -52,10 +67,26 @@ class IdeaController extends Controller
 
         try {
             $validated = $request->validate([
-                'title' => 'required|string|max:255',
+                'title' => 'required|string',
                 'content' => 'nullable|string',
                 'status' => 'string|in:draft,active,archived,completed',
             ]);
+
+            $title = $validated['title'];
+            $content = $validated['content'] ?? '';
+
+            // If title is longer than 255 characters, truncate and prepend to description
+            if (strlen($title) > 255) {
+                if ($content) {
+                    $content = $title."\n\n".$content;
+                } else {
+                    $content = $title;
+                }
+                $title = substr($title, 0, 255);
+            }
+
+            $validated['title'] = $title;
+            $validated['content'] = $content ?: null;
 
             $idea->update($validated);
 
@@ -96,9 +127,18 @@ class IdeaController extends Controller
                 $now = now();
 
                 $ideaData = array_map(function ($line) use ($userId, $status, $now) {
+                    $title = $line;
+                    $content = null;
+
+                    // If title is longer than 255 characters, truncate and prepend to description
+                    if (strlen($title) > 255) {
+                        $content = $title;
+                        $title = substr($title, 0, 255);
+                    }
+
                     return [
-                        'title' => substr($line, 0, 255),
-                        'content' => null,
+                        'title' => $title,
+                        'content' => $content,
                         'status' => $status,
                         'user_id' => $userId,
                         'created_at' => $now,
@@ -111,7 +151,7 @@ class IdeaController extends Controller
                 // New format: array of objects with title and optional description
                 $validated = $request->validate([
                     'ideas' => 'required|array',
-                    'ideas.*.title' => 'required|string|max:255',
+                    'ideas.*.title' => 'required|string',
                     'ideas.*.description' => 'nullable|string',
                     'status' => 'string|in:draft,active,archived,completed',
                 ]);
@@ -131,9 +171,22 @@ class IdeaController extends Controller
                 $now = now();
 
                 $ideaData = array_map(function ($idea) use ($userId, $status, $now) {
+                    $title = $idea['title'];
+                    $content = $idea['description'] ?? '';
+
+                    // If title is longer than 255 characters, truncate and prepend to description
+                    if (strlen($title) > 255) {
+                        if ($content) {
+                            $content = $title."\n\n".$content;
+                        } else {
+                            $content = $title;
+                        }
+                        $title = substr($title, 0, 255);
+                    }
+
                     return [
-                        'title' => substr($idea['title'], 0, 255),
-                        'content' => $idea['description'] ?? null,
+                        'title' => $title,
+                        'content' => $content ?: null,
                         'status' => $status,
                         'user_id' => $userId,
                         'created_at' => $now,

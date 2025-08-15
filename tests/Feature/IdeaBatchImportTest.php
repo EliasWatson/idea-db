@@ -82,7 +82,7 @@ test('batch import requires at least one idea', function () {
     $this->assertDatabaseCount('ideas', 0);
 });
 
-test('batch import truncates long titles to 255 characters', function () {
+test('batch import truncates long titles to 255 characters and prepends full text to description', function () {
     $user = User::factory()->create();
 
     $longTitle = str_repeat('a', 300);
@@ -99,6 +99,52 @@ test('batch import truncates long titles to 255 characters', function () {
     $idea = Idea::first();
     expect(strlen($idea->title))->toBe(255);
     expect($idea->title)->toBe(str_repeat('a', 255));
+    expect($idea->content)->toBe($longTitle);
+});
+
+test('batch import with array format truncates long titles and prepends to description', function () {
+    $user = User::factory()->create();
+
+    $longTitle = str_repeat('a', 300);
+    $description = 'Original description';
+
+    $response = $this->actingAs($user)
+        ->post('/ideas/batch', [
+            'ideas' => [
+                ['title' => $longTitle, 'description' => $description],
+            ],
+            'status' => 'draft',
+        ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success', 'Successfully imported 1 ideas!');
+
+    $idea = Idea::first();
+    expect(strlen($idea->title))->toBe(255);
+    expect($idea->title)->toBe(str_repeat('a', 255));
+    expect($idea->content)->toBe($longTitle."\n\n".$description);
+});
+
+test('batch import with array format and no description prepends full title to content', function () {
+    $user = User::factory()->create();
+
+    $longTitle = str_repeat('z', 300);
+
+    $response = $this->actingAs($user)
+        ->post('/ideas/batch', [
+            'ideas' => [
+                ['title' => $longTitle],
+            ],
+            'status' => 'draft',
+        ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success', 'Successfully imported 1 ideas!');
+
+    $idea = Idea::first();
+    expect(strlen($idea->title))->toBe(255);
+    expect($idea->title)->toBe(str_repeat('z', 255));
+    expect($idea->content)->toBe($longTitle);
 });
 
 test('guests cannot batch import ideas', function () {
