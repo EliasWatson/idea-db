@@ -67,7 +67,7 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
           {ideas.map((idea) => (
             <TableRow key={idea.id}>
               <TableCell>
-                <Link href={`/ideas/${idea.id}`} className="font-medium text-primary hover:underline">
+                <Link href={`/ideas/${idea.id}`} className="font-medium text-wrap wrap-normal text-primary hover:underline">
                   {idea.title}
                 </Link>
               </TableCell>
