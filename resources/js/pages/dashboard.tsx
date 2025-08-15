@@ -1,6 +1,7 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AddIdeaForm from '@/components/add-idea-form';
+import IdeaList from '@/components/idea-list';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -12,7 +13,20 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function Dashboard() {
+interface Idea {
+  id: number;
+  title: string;
+  content: string;
+  status: 'draft' | 'active' | 'archived' | 'completed';
+  created_at: string;
+  updated_at: string;
+}
+
+interface DashboardProps {
+  ideas: Idea[];
+}
+
+export default function Dashboard({ ideas }: DashboardProps) {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
@@ -36,8 +50,9 @@ export default function Dashboard() {
             <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
           </div>
         </div>
-        <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-          <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Your Ideas</h2>
+          <IdeaList ideas={ideas} />
         </div>
       </div>
     </AppLayout>

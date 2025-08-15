@@ -1,0 +1,74 @@
+import * as React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
+interface Idea {
+  id: number;
+  title: string;
+  content: string;
+  status: 'draft' | 'active' | 'archived' | 'completed';
+  created_at: string;
+  updated_at: string;
+}
+
+interface IdeaListProps {
+  ideas: Idea[];
+}
+
+const statusColors = {
+  draft: 'outline',
+  active: 'default',
+  archived: 'secondary',
+  completed: 'destructive',
+} as const;
+
+const statusLabels = {
+  draft: 'Draft',
+  active: 'Active',
+  archived: 'Archived',
+  completed: 'Completed',
+} as const;
+
+export default function IdeaList({ ideas }: IdeaListProps) {
+  if (ideas.length === 0) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <p className="text-muted-foreground">No ideas yet</p>
+            <p className="text-sm text-muted-foreground">
+              Add your first idea using the form above!
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {ideas.map((idea) => (
+        <Card key={idea.id}>
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <CardTitle className="text-lg">{idea.title}</CardTitle>
+                <CardDescription>
+                  Created {new Date(idea.created_at).toLocaleDateString()}
+                </CardDescription>
+              </div>
+              <Badge variant={statusColors[idea.status]}>
+                {statusLabels[idea.status]}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {idea.content}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}

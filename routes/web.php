@@ -9,7 +9,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
+        return Inertia::render('dashboard', [
+            'ideas' => auth()->user()->ideas()->latest()->get(),
+        ]);
     })->name('dashboard');
     
     Route::post('ideas', [App\Http\Controllers\IdeaController::class, 'store'])->name('ideas.store');
