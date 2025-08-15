@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Link } from '@inertiajs/react';
 
 interface Idea {
@@ -32,37 +32,43 @@ const statusLabels = {
 export default function IdeaList({ ideas }: IdeaListProps) {
   if (ideas.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-8">
+      <div className="rounded-md border">
+        <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-muted-foreground">No ideas yet</p>
             <p className="text-sm text-muted-foreground">Add your first idea using the form above!</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {ideas.map((idea) => (
-        <Link key={idea.id} href={`/ideas/${idea.id}`}>
-          <Card className="cursor-pointer transition-colors hover:bg-muted/50">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <CardTitle className="text-lg">{idea.title}</CardTitle>
-                  <CardDescription>Created {new Date(idea.created_at).toLocaleDateString()}</CardDescription>
-                </div>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Created</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {ideas.map((idea) => (
+            <TableRow key={idea.id}>
+              <TableCell>
+                <Link href={`/ideas/${idea.id}`} className="font-medium text-primary hover:underline">
+                  {idea.title}
+                </Link>
+              </TableCell>
+              <TableCell>
                 <Badge variant={statusColors[idea.status]}>{statusLabels[idea.status]}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="line-clamp-3 text-sm whitespace-pre-wrap text-muted-foreground">{idea.content}</p>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
+              </TableCell>
+              <TableCell className="text-muted-foreground">{new Date(idea.created_at).toLocaleDateString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
