@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import * as React from 'react';
 
 interface MassImportFormProps {
@@ -12,7 +12,7 @@ interface MassImportFormProps {
 }
 
 export default function MassImportForm({ onSuccess, className }: MassImportFormProps) {
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, processing, errors, reset } = useForm({
     ideas: '',
     status: 'draft',
   });
@@ -20,9 +20,67 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
   const [lineCount, setLineCount] = React.useState(0);
 
   React.useEffect(() => {
-    const lines = data.ideas.split('\n').filter((line) => line.trim().length > 0);
-    setLineCount(lines.length);
+    const parsedIdeas = parseMarkdownList(data.ideas);
+    setLineCount(parsedIdeas.length);
   }, [data.ideas]);
+
+  const parseMarkdownList = (text: string) => {
+    const lines = text.split('\n');
+    const ideas: Array<{ title: string; description?: string }> = [];
+    let currentIdea: { title: string; description?: string } | null = null;
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      
+      // Check if this is a main list item (- or * at the start with no indentation, or numbered with no indentation)
+      const mainListMatch = line.match(/^[-*]\s+(.+)$/) || line.match(/^\d+\.\s+(.+)$/);
+      
+      if (mainListMatch) {
+        // Save previous idea if exists
+        if (currentIdea) {
+          ideas.push(currentIdea);
+        }
+        // Start new idea
+        currentIdea = { title: mainListMatch[1] };
+      } else {
+        // Check if this is a nested list item (indented - or *, or indented numbered)
+        const nestedMatch = line.match(/^\s+[-*]\s+(.+)$/) || line.match(/^\s+\d+\.\s+(.+)$/);
+        
+        if (nestedMatch && currentIdea) {
+          // Add to description of current idea
+          const description = nestedMatch[1];
+          if (currentIdea.description) {
+            currentIdea.description += '\n' + description;
+          } else {
+            currentIdea.description = description;
+          }
+        } else if (currentIdea && line.startsWith('  ')) {
+          // Treat indented text as part of description
+          const description = trimmed; // Use trimmed text
+          if (currentIdea.description) {
+            currentIdea.description += '\n' + description;
+          } else {
+            currentIdea.description = description;
+          }
+        } else if (!line.match(/^[-*]\s+/) && !line.match(/^\d+\.\s+/)) {
+          // This is a regular line - treat as a standalone idea
+          if (currentIdea) {
+            ideas.push(currentIdea);
+            currentIdea = null;
+          }
+          ideas.push({ title: trimmed });
+        }
+      }
+    }
+    
+    // Don't forget the last idea
+    if (currentIdea) {
+      ideas.push(currentIdea);
+    }
+    
+    return ideas;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +89,17 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
       return;
     }
 
-    post('/ideas/batch', {
+    const parsedIdeas = parseMarkdownList(data.ideas);
+    
+    router.post('/ideas/batch', {
+      ideas: parsedIdeas,
+      status: data.status,
+    }, {
       onSuccess: () => {
         reset();
         onSuccess?.();
       },
-      onError: (errors) => {
+      onError: (errors: Record<string, string>) => {
         console.error('Failed to import ideas:', errors);
       },
     });
@@ -50,7 +113,7 @@ export default function MassImportForm({ onSuccess, className }: MassImportFormP
           id="ideas"
           value={data.ideas}
           onChange={(e) => setData('ideas', e.target.value)}
-          placeholder="Enter one idea per line..."
+          placeholder="Enter ideas (one per line or as Markdown list with nested items)..."
           disabled={processing}
           rows={10}
           className="min-h-[200px]"
