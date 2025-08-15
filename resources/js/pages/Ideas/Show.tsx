@@ -1,10 +1,15 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, Edit, Save, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface Idea {
   id: number;
@@ -34,6 +39,13 @@ const statusLabels = {
 } as const;
 
 export default function ShowIdea({ idea }: ShowIdeaProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const { data, setData, put, processing, errors, reset } = useForm({
+    title: idea.title,
+    content: idea.content || '',
+    status: idea.status,
+  });
+
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'Dashboard',
@@ -45,41 +57,148 @@ export default function ShowIdea({ idea }: ShowIdeaProps) {
     },
   ];
 
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    reset();
+  };
+
+  const handleSave = () => {
+    put(`/ideas/${idea.id}`, {
+      onSuccess: () => {
+        setIsEditing(false);
+      },
+      onError: (errors) => {
+        console.error('Failed to update idea:', errors);
+      },
+    });
+  };
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={idea.title} />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard">
-            <Button variant="outline" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold">Idea Details</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard">
+              <Button variant="outline" size="icon">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <h1 className="text-2xl font-bold">Idea Details</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {isEditing ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCancel}
+                  disabled={processing}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={processing}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" onClick={handleEdit}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+            )}
+          </div>
         </div>
 
         <Card>
           <CardHeader>
             <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <CardTitle className="text-xl">{idea.title}</CardTitle>
-                <CardDescription>
-                  Created {new Date(idea.created_at).toLocaleDateString()}
-                  {idea.updated_at !== idea.created_at && <span> • Updated {new Date(idea.updated_at).toLocaleDateString()}</span>}
-                </CardDescription>
+              <div className="space-y-1 flex-1">
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      value={data.title}
+                      onChange={(e) => setData('title', e.target.value)}
+                      className="text-xl font-semibold"
+                      disabled={processing}
+                    />
+                    {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+                  </div>
+                ) : (
+                  <>
+                    <CardTitle className="text-xl">{idea.title}</CardTitle>
+                    <CardDescription>
+                      Created {new Date(idea.created_at).toLocaleDateString()}
+                      {idea.updated_at !== idea.created_at && <span> • Updated {new Date(idea.updated_at).toLocaleDateString()}</span>}
+                    </CardDescription>
+                  </>
+                )}
               </div>
-              <Badge variant={statusColors[idea.status]}>{statusLabels[idea.status]}</Badge>
+              <div className="ml-4">
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      value={data.status}
+                      onValueChange={(value) => setData('status', value as 'draft' | 'active' | 'archived' | 'completed')}
+                      disabled={processing}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
+                  </div>
+                ) : (
+                  <Badge variant={statusColors[idea.status]}>{statusLabels[idea.status]}</Badge>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {idea.content ? (
-                <div>
-                  <h3 className="mb-2 text-sm font-medium text-muted-foreground">Content</h3>
-                  <p className="whitespace-pre-wrap">{idea.content}</p>
+              {isEditing ? (
+                <div className="space-y-2">
+                  <Label htmlFor="content">Content</Label>
+                  <Textarea
+                    id="content"
+                    value={data.content}
+                    onChange={(e) => setData('content', e.target.value)}
+                    placeholder="Enter idea content..."
+                    rows={6}
+                    disabled={processing}
+                  />
+                  {errors.content && <p className="text-sm text-destructive">{errors.content}</p>}
                 </div>
               ) : (
-                <p className="text-muted-foreground italic">No content provided</p>
+                <>
+                  {idea.content ? (
+                    <div>
+                      <h3 className="mb-2 text-sm font-medium text-muted-foreground">Content</h3>
+                      <p className="whitespace-pre-wrap">{idea.content}</p>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground italic">No content provided</p>
+                  )}
+                </>
               )}
             </div>
           </CardContent>

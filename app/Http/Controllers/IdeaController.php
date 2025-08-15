@@ -42,4 +42,27 @@ class IdeaController extends Controller
             'idea' => $idea,
         ]);
     }
+
+    public function update(Request $request, Idea $idea): RedirectResponse
+    {
+        if ($idea->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'nullable|string',
+                'status' => 'string|in:draft,active,archived,completed',
+            ]);
+
+            $idea->update($validated);
+
+            return redirect()->back()->with('success', 'Idea updated successfully!');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        }
+    }
 }
