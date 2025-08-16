@@ -19,7 +19,7 @@ return new class extends Migration
             $table->tinyInteger('vote');
             $table->timestamps();
 
-            $table->unique(['idea_id', 'user_id', DB::raw('DATE(created_at)')], 'unique_daily_vote');
+            $table->unique(['idea_id', 'user_id'], 'unique_daily_vote');
             $table->index(['idea_id', 'user_id']);
         });
     }
