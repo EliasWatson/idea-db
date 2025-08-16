@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import VoteButtons from '@/components/vote-buttons';
 import { Link, router } from '@inertiajs/react';
 
 interface Idea {
@@ -7,8 +8,11 @@ interface Idea {
   title: string;
   content: string;
   status: 'draft' | 'active' | 'archived' | 'completed';
+  score: number;
   created_at: string;
   updated_at: string;
+  user_vote: number | null;
+  can_vote: boolean;
 }
 
 interface IdeaListProps {
@@ -32,18 +36,13 @@ const statusLabels = {
 
 export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
   const totalIdeas = ideas.length;
-  const searchResultsText = searchQuery 
+  const searchResultsText = searchQuery
     ? `${totalIdeas} idea${totalIdeas !== 1 ? 's' : ''} found for "${searchQuery}"`
     : `${totalIdeas} idea${totalIdeas !== 1 ? 's' : ''} total`;
 
   if (ideas.length === 0) {
     return (
-      <div 
-        className="rounded-md border"
-        role="region"
-        aria-label="Ideas list"
-        aria-live="polite"
-      >
+      <div className="rounded-md border" role="region" aria-label="Ideas list" aria-live="polite">
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             {searchQuery ? (
@@ -64,12 +63,7 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
   }
 
   return (
-    <div 
-      className="rounded-md border"
-      role="region"
-      aria-label="Ideas list"
-      aria-live="polite"
-    >
+    <div className="rounded-md border" role="region" aria-label="Ideas list" aria-live="polite">
       <Table>
         <TableCaption className="sr-only">
           {searchResultsText}. Navigate through ideas using arrow keys and access individual ideas with Enter.
@@ -78,12 +72,13 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
           <TableRow>
             <TableHead scope="col">Title</TableHead>
             <TableHead scope="col">Status</TableHead>
+            <TableHead scope="col">Score</TableHead>
             <TableHead scope="col">Created</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {ideas.map((idea, index) => (
-            <TableRow 
+            <TableRow
               key={idea.id}
               role="row"
               aria-rowindex={index + 2}
@@ -99,23 +94,19 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
               tabIndex={0}
             >
               <TableCell role="gridcell">
-                <Link 
-                  href={`/ideas/${idea.id}`}
-                  className="font-medium text-wrap wrap-normal text-primary hover:underline"
-                  tabIndex={-1}
-                >
+                <Link href={`/ideas/${idea.id}`} className="font-medium text-wrap wrap-normal text-primary hover:underline" tabIndex={-1}>
                   {idea.title}
                 </Link>
               </TableCell>
               <TableCell role="gridcell">
-                <Badge 
-                  variant={statusColors[idea.status]}
-                  aria-label={`Status: ${statusLabels[idea.status]}`}
-                >
+                <Badge variant={statusColors[idea.status]} aria-label={`Status: ${statusLabels[idea.status]}`}>
                   {statusLabels[idea.status]}
                 </Badge>
               </TableCell>
-              <TableCell 
+              <TableCell role="gridcell" onClick={(e) => e.stopPropagation()}>
+                <VoteButtons ideaId={idea.id} score={idea.score} userVote={idea.user_vote} canVote={idea.can_vote} />
+              </TableCell>
+              <TableCell
                 className="text-muted-foreground"
                 role="gridcell"
                 aria-label={`Created on ${new Date(idea.created_at).toLocaleDateString()}`}

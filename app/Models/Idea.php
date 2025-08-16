@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
 class Idea extends Model
@@ -22,6 +23,7 @@ class Idea extends Model
         'content',
         'status',
         'user_id',
+        'score',
     ];
 
     /**
@@ -33,6 +35,7 @@ class Idea extends Model
     {
         return [
             'status' => 'string',
+            'score' => 'integer',
         ];
     }
 
@@ -42,6 +45,42 @@ class Idea extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(IdeaVote::class);
+    }
+
+    public function calculateScore(): int
+    {
+        return $this->votes()->sum('vote');
+    }
+
+    public function updateScore(): void
+    {
+        $this->update(['score' => $this->calculateScore()]);
+    }
+
+    public function getUserTodayVote(?int $userId = null): ?IdeaVote
+    {
+        if (! $userId) {
+            return null;
+        }
+
+        return $this->votes()
+            ->forIdeaAndUser($this->id, $userId)
+            ->today()
+            ->first();
+    }
+
+    public function canUserVoteToday(?int $userId = null): bool
+    {
+        if (! $userId) {
+            return false;
+        }
+
+        return $this->getUserTodayVote($userId) === null;
     }
 
     /**

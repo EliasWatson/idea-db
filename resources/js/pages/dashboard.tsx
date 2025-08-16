@@ -22,8 +22,11 @@ interface Idea {
   title: string;
   content: string;
   status: 'draft' | 'active' | 'archived' | 'completed';
+  score: number;
   created_at: string;
   updated_at: string;
+  user_vote: number | null;
+  can_vote: boolean;
 }
 
 interface DashboardProps {
@@ -36,24 +39,21 @@ export default function Dashboard({ ideas, search }: DashboardProps) {
   const [searchQuery, setSearchQuery] = React.useState(search || '');
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const handleSearch = React.useCallback(
-    (query: string) => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-      searchTimeoutRef.current = setTimeout(() => {
-        router.get(
-          '/dashboard',
-          { search: query || undefined },
-          {
-            preserveScroll: true,
-            preserveState: true,
-          },
-        );
-      }, 300);
-    },
-    [router],
-  );
+  const handleSearch = React.useCallback((query: string) => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      router.get(
+        '/dashboard',
+        { search: query || undefined },
+        {
+          preserveScroll: true,
+          preserveState: true,
+        },
+      );
+    }, 300);
+  }, []);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
