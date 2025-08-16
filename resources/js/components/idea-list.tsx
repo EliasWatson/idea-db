@@ -83,21 +83,14 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
               role="row"
               aria-rowindex={index + 2}
               className="cursor-pointer"
-              aria-label={`${idea.title}, ${statusLabels[idea.status]}, created ${new Date(idea.created_at).toLocaleDateString()}`}
+              aria-label={idea.title}
               onClick={() => router.visit(`/ideas/${idea.id}`)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  router.visit(`/ideas/${idea.id}`);
-                }
-              }}
-              tabIndex={0}
             >
               <TableCell role="gridcell" onClick={(e) => e.stopPropagation()}>
                 <VoteButtons ideaId={idea.id} userVote={idea.user_vote} canVote={idea.can_vote} />
               </TableCell>
               <TableCell role="gridcell">
-                <Link href={`/ideas/${idea.id}`} className="font-medium text-wrap wrap-normal text-primary hover:underline" tabIndex={-1}>
+                <Link href={`/ideas/${idea.id}`} className="font-medium text-wrap wrap-normal text-primary hover:underline focus:outline-none focus:underline" tabIndex={0}>
                   {idea.title}
                 </Link>
               </TableCell>
