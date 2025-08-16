@@ -70,9 +70,9 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
         </TableCaption>
         <TableHeader>
           <TableRow>
+            <TableHead scope="col" />
             <TableHead scope="col">Title</TableHead>
             <TableHead scope="col">Status</TableHead>
-            <TableHead scope="col">Score</TableHead>
             <TableHead scope="col">Created</TableHead>
           </TableRow>
         </TableHeader>
@@ -93,6 +93,9 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
               }}
               tabIndex={0}
             >
+              <TableCell role="gridcell" onClick={(e) => e.stopPropagation()}>
+                <VoteButtons ideaId={idea.id} userVote={idea.user_vote} canVote={idea.can_vote} />
+              </TableCell>
               <TableCell role="gridcell">
                 <Link href={`/ideas/${idea.id}`} className="font-medium text-wrap wrap-normal text-primary hover:underline" tabIndex={-1}>
                   {idea.title}
@@ -102,9 +105,6 @@ export default function IdeaList({ ideas, searchQuery }: IdeaListProps) {
                 <Badge variant={statusColors[idea.status]} aria-label={`Status: ${statusLabels[idea.status]}`}>
                   {statusLabels[idea.status]}
                 </Badge>
-              </TableCell>
-              <TableCell role="gridcell" onClick={(e) => e.stopPropagation()}>
-                <VoteButtons ideaId={idea.id} score={idea.score} userVote={idea.user_vote} canVote={idea.can_vote} />
               </TableCell>
               <TableCell
                 className="text-muted-foreground"
